@@ -15,7 +15,7 @@ cur.execute("INSERT INTO test (num, data) VALUES (%s, %s)",(100, "abc'def"))
 # Query the database and obtain data as Python objects
 cur.execute("SELECT * FROM test;")
 cur.fetchone()
-(1, 100, "abc'def")
+
 
 # Make the changes to the database persistent
 conn.commit()
