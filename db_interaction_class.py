@@ -18,13 +18,22 @@ class PerevalDatabase:
 
     def insert_pereval(self, name, title, other_titles, connect, add_time):
         try:
-            query = """INSERT INTO pereval_added (beautyTitle, title, other_titles, connect, add_time) 
+            query = """INSERT INTO pereval_added (beautytitle, title, other_titles, connect, add_time) 
                        VALUES (%s, %s, %s, %s, %s)"""
             self.cursor.execute(query, (name, title, other_titles, connect, add_time))
             self.connection.commit()
             print("Record inserted successfully")
         except Exception as e:
             print(f"Error inserting data: {e}")
+
+    def fetch_perevals(self):
+        try:
+            self.cursor.execute("SELECT * FROM pereval_added")
+            results = self.cursor.fetchall()
+            return results
+        except Exception as e:
+            print(f"Error fetching data: {e}")
+            return []
 
     def close(self):
         try:
@@ -36,7 +45,7 @@ class PerevalDatabase:
 
 
 db = PerevalDatabase(db_name="pereval", user="postgres", password="admin")
-db.insert_pereval("пер. ", "Смоленского", "Четырев", "", "2024-09-16 23:25:13")
-# perevals = db.fetch_perevals()
-# print(perevals)
+# db.insert_pereval("пер. ", "Смоленского", "Четырев", "", "2024-09-16 23:25:13")
+perevals = db.fetch_perevals()
+print(perevals)
 db.close()
