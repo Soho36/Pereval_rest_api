@@ -1,9 +1,21 @@
+import os
+from dotenv import load_dotenv
 import psycopg2
+
+load_dotenv()   # Load environment variables from .env file
 
 
 class PerevalDatabase:
-    def __init__(self, db_name, user, password, host='localhost', port='5432'):
+
+    def __init__(self):
+        db_name = os.getenv('DB_NAME')
+        user = os.getenv('DB_USER')
+        password = os.getenv('DB_PASSWORD')
+        host = os.getenv('DB_HOST', 'localhost')  # Default to localhost
+        port = os.getenv('DB_PORT', '5432')  # Default to 5432
+
         try:
+            # Establish database connection
             self.connection = psycopg2.connect(
                 dbname=db_name,
                 user=user,
@@ -16,11 +28,12 @@ class PerevalDatabase:
         except Exception as e:
             print(f"Error connecting to database: {e}")
 
-    def insert_pereval(self, name, title, other_titles, connect, add_time):
+    # Method for inserting into the pereval_added table
+    def insert_pereval(self, name, title, other_titles, connect, add_time, status):
         try:
-            query = """INSERT INTO pereval_added (beautytitle, title, other_titles, connect, add_time) 
-                       VALUES (%s, %s, %s, %s, %s)"""
-            self.cursor.execute(query, (name, title, other_titles, connect, add_time))
+            query = """INSERT INTO pereval_added (beautytitle, title, other_titles, connect, add_time, status) 
+                       VALUES (%s, %s, %s, %s, %s, %s)"""
+            self.cursor.execute(query, (name, title, other_titles, connect, add_time, status))
             self.connection.commit()
             print("Record inserted successfully")
         except Exception as e:
@@ -35,7 +48,7 @@ class PerevalDatabase:
             print(f"Error fetching data: {e}")
             return []
 
-    def close(self):
+    def close(self):    # Close the database connection
         try:
             self.cursor.close()
             self.connection.close()
@@ -45,7 +58,7 @@ class PerevalDatabase:
 
 
 db = PerevalDatabase(db_name="pereval", user="postgres", password="admin")
-# db.insert_pereval("пер. ", "Смоленского", "Четырев", "", "2024-09-16 23:25:13")
+db.insert_pereval("пер. ", "Смоленского", "Четырев", "", "2024-09-16 23:25:13", 'new')
 perevals = db.fetch_perevals()
 print(perevals)
 db.close()
