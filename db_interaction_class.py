@@ -57,8 +57,8 @@ class PerevalDatabase:
             print(f"Error closing database connection: {e}")
 
 
-db = PerevalDatabase(db_name="pereval", user="postgres", password="admin")
-db.insert_pereval("пер. ", "Смоленского", "Четырев", "", "2024-09-16 23:25:13", 'new')
+db = PerevalDatabase()
+db.insert_pereval("пер. ", "Верхошинского", "Пятырев", "", "2024-09-17 12:25:13", 'new')
 perevals = db.fetch_perevals()
 print(perevals)
 db.close()
