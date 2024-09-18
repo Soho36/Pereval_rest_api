@@ -41,7 +41,14 @@ def get_perevals(id: int = None):   # Get one entry for pereval by ID
 
 
 @app.post("/perevals/")
-def create_pereval(name: str, title: str, other_titles: str, connect: str, add_time: str, status: str):
+def create_pereval(
+        name: str,
+        title: str,
+        other_titles: str,
+        connect: str,
+        add_time: str,
+        status: str
+):
     conn = get_db_connection()
     cursor = conn.cursor()
     query = """INSERT INTO pereval_added (beautyTitle, title, other_titles, connect, add_time, status) 
@@ -53,9 +60,30 @@ def create_pereval(name: str, title: str, other_titles: str, connect: str, add_t
 
 
 @app.patch("/perevals/{pereval_id}")
-def update_pereval(pereval_id: int, name: str = None, title: str = None, other_titles: str = None, connect: str = None, add_time: str = None, status: str = None):
+def update_pereval(
+        pereval_id: int,
+        name: str = None,
+        title: str = None,
+        other_titles: str = None,
+        connect: str = None,
+        add_time: str = None,
+        status: str = None
+):
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # Check current status of the entry
+    cursor.execute("SELECT status FROM pereval_added WHERE id = %s", (pereval_id,))
+    result = cursor.fetchone()
+
+    if not result:
+        return {"error": "Pereval not found"}
+
+    current_status = result[0]
+
+    # Only allow update if status is 'new'
+    if current_status != 'new':
+        return {"error": "Cannot update entry unless its status is 'new'."}
 
     # Build the dynamic query based on the provided fields
     query = "UPDATE pereval_added SET "
@@ -98,61 +126,6 @@ def update_pereval(pereval_id: int, name: str = None, title: str = None, other_t
             return {"error": "Pereval not found or no changes were made."}
 
         return {"message": "Pereval updated successfully."}
-
-    except Exception as e:
-        return {"error": str(e)}
-
-    finally:
-        cursor.close()
-        conn.close()
-
-
-@app.patch("/users/{user_id}")
-def update_pereval(user_id: int, name: str = None, email: str = None, fam: str = None, otc: str = None, phone: str = None, status: str = None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Build the dynamic query based on the provided fields
-    query = "UPDATE users SET "
-    updates = []
-    values = []
-
-    if name:
-        updates.append("name = %s")
-        values.append(name)
-    if email:
-        updates.append("email = %s")
-        values.append(email)
-    if fam:
-        updates.append("fam = %s")
-        values.append(fam)
-    if otc:
-        updates.append("otc = %s")
-        values.append(otc)
-    if phone:
-        updates.append("phone = %s")
-        values.append(phone)
-    if status:
-        updates.append("status = %s")
-        values.append(status)
-
-    # If no fields were provided, return an error
-    if not updates:
-        return {"error": "No fields provided to update."}
-
-    # Finalize the query and append the pereval_id for the WHERE clause
-    query += ", ".join(updates) + " WHERE id = %s"
-    values.append(user_id)
-
-    try:
-        cursor.execute(query, values)
-        conn.commit()
-
-        # Check if any row was affected
-        if cursor.rowcount == 0:
-            return {"error": "User not found or no changes were made."}
-
-        return {"message": "User updated successfully."}
 
     except Exception as e:
         return {"error": str(e)}
