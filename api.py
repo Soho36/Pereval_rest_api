@@ -56,7 +56,7 @@ def create_pereval(
     cursor.execute(query, (name, title, other_titles, connect, add_time, status))
     conn.commit()
     conn.close()
-    return {"message": "Pereval added successfully!"}
+    return {"state": 1, "message": "Pereval added successfully!"}
 
 
 @app.patch("/perevals/{pereval_id}")
@@ -77,13 +77,13 @@ def update_pereval(
     result = cursor.fetchone()
 
     if not result:
-        return {"error": "Pereval not found"}
+        return {"state": 0, "error": "Pereval not found"}
 
     current_status = result[0]
 
     # Only allow update if status is 'new'
     if current_status != 'new':
-        return {"error": "Cannot update entry unless its status is 'new'."}
+        return {"state": 0, "error": "Cannot update entry unless its status is 'new'."}
 
     # Build the dynamic query based on the provided fields
     query = "UPDATE pereval_added SET "
@@ -111,7 +111,7 @@ def update_pereval(
 
     # If no fields were provided, return an error
     if not updates:
-        return {"error": "No fields provided to update."}
+        return {"state": 0, "error": "No fields provided to update."}
 
     # Finalize the query and append the pereval_id for the WHERE clause
     query += ", ".join(updates) + " WHERE id = %s"
@@ -123,12 +123,12 @@ def update_pereval(
 
         # Check if any row was affected
         if cursor.rowcount == 0:
-            return {"error": "Pereval not found or no changes were made."}
+            return {"state": 0, "error": "Pereval not found or no changes were made."}
 
-        return {"message": "Pereval updated successfully."}
+        return {"state": 1, "message": "Pereval updated successfully."}
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"state": 0, "error": str(e)}
 
     finally:
         cursor.close()
