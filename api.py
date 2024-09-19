@@ -19,6 +19,11 @@ def get_db_connection():
     return conn
 
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the Pereval API!"}
+
+
 #   GET PEREVALS BY USER ID
 
 

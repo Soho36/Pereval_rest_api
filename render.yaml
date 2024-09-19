@@ -1,7 +1,7 @@
 version: 1
 services:
   - type: web
-    name: perevals-api
+    name: Pereval_rest_api
     env: python
     plan: free
     runtime: python
