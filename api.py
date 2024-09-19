@@ -19,7 +19,10 @@ def get_db_connection():
     return conn
 
 
-@app.get("/perevals/")
+#   GET PEREVALS BY USER ID
+
+
+@app.get("/users/{user_id}/perevals/")
 def get_perevals(user_id: int = None):   # Get one entry for pereval by ID
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -32,6 +35,33 @@ def get_perevals(user_id: int = None):   # Get one entry for pereval by ID
 
     if not result:
         return {"state": 0, "error": "User not found"}
+
+    conn.close()
+
+    return {"state": 1, "perevals": result}
+
+
+#   GET PEREVALS BY USER EMAIL
+
+
+@app.get("/users/{email}/perevals/")
+def get_perevals(email: str):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch all perevals added by this user
+    query = (
+        "SELECT pa.* "
+        "FROM pereval_added pa "
+        "JOIN users u ON pa.user_id = u.id "
+        "WHERE u.email = %s;"
+    )
+    cursor.execute(query, (email,))
+
+    result = cursor.fetchall()  # Fetch results (all or filtered)
+
+    if not result:
+        return {"state": 0, "error": "No perevals found for this user or user does not exist"}
 
     conn.close()
 
