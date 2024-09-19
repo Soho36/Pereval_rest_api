@@ -20,28 +20,27 @@ def get_db_connection():
 
 
 @app.get("/perevals/")
-def get_perevals(id: int = None):   # Get one entry for pereval by ID
+def get_perevals(user_id: int = None):   # Get one entry for pereval by ID
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    if id:
-        # If id is provided, fetch perevals matching the id
-        query = "SELECT * FROM pereval_added WHERE id = %s"
-        cursor.execute(query, (id,))
-    else:
-        # If no id is provided, fetch all perevals
-        query = "SELECT * FROM pereval_added"
-        cursor.execute(query)
+    # Fetch all perevals added by this user
+    query = "SELECT * FROM pereval_added WHERE user_id = %s"
+    cursor.execute(query, (user_id,))
 
     result = cursor.fetchall()  # Fetch results (all or filtered)
 
+    if not result:
+        return {"state": 0, "error": "User not found"}
+
     conn.close()
 
-    return {"perevals": result}
+    return {"state": 1, "perevals": result}
 
 
 @app.post("/perevals/")
 def create_pereval(
+        user_id: int,
         name: str,
         title: str,
         other_titles: str,
@@ -51,9 +50,11 @@ def create_pereval(
 ):
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = """INSERT INTO pereval_added (beautyTitle, title, other_titles, connect, add_time, status) 
-               VALUES (%s, %s, %s, %s, %s, %s)"""
-    cursor.execute(query, (name, title, other_titles, connect, add_time, status))
+    query = """
+    INSERT INTO pereval_added (user_id, beautyTitle, title, other_titles, connect, add_time, status) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(query, (user_id, name, title, other_titles, connect, add_time, status))
     conn.commit()
     conn.close()
     return {"state": 1, "message": "Pereval added successfully!"}
