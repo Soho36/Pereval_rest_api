@@ -1,24 +1,3 @@
-import psycopg2
 
-conn = psycopg2.connect("dbname=pereval user=postgres password=admin")
-cur = conn.cursor()
-# cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
-cur.execute("INSERT INTO pereval_added (status, data) VALUES (%s, %s)", (100, "preved kotlet!"))
-
-cur.execute("SELECT * FROM test;")
-result = cur.fetchone()
-print(result)
-
-# conn.commit()
-cur.close()
-conn.close()
-
-
-# *****************************************************
-
-
-
-def close(self):
-    self.cursor.close()
-    self.connection.close()
-
+'PGPASSWORD=bE3c2d1A11lnNXhjYdFHNjbnOFtKM0N9 psql -h dpg-crmaui5umphs739bh0k0-a.frankfurt-postgres.render.com -U perevals_db_user perevals_db'
+'psql -h dpg-crmaui5umphs739bh0k0-a.frankfurt-postgres.render.com -U perevals_db_user perevals_db'
