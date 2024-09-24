@@ -5,20 +5,16 @@
 
 ## Deployed Version
 
+Base URL: https://pereval-rest-api.onrender.com/
+
 You can view and interact with the API documentation at:
 
 [Pereval REST API Documentation](https://pereval-rest-api.onrender.com/docs)
 
-
-
 This API allows users to interact with the Pereval platform by submitting data about mountain passes.
 
-Base URL
-Base URL: https://pereval-rest-api.onrender.com/
-
-You can access the interactive Swagger documentation here: Pereval REST API Docs
 Endpoints Overview:
-1. Get Perevals by User ID
+1. Get Perevals by User ID 
 Endpoint: /users/{user_id}/perevals/
 Method: GET
 Description: Retrieves all perevals (mountain passes) submitted by a specific user.
